@@ -175,7 +175,15 @@ async function runIngest() {
     )
   }
 
-  const allSources: SourceConfig[] = [...STATIC_SOURCES, ...buildEntitySources(entities)]
+  let allSources: SourceConfig[] = [...STATIC_SOURCES, ...buildEntitySources(entities)]
+
+  let newsapi_sources_skipped = 0
+  if (process.env.VERCEL === '1') {
+    const before = allSources.length
+    allSources = allSources.filter(s => s.type !== 'newsapi')
+    newsapi_sources_skipped = before - allSources.length
+    console.log(`[ingest] Vercel env detected — skipped ${newsapi_sources_skipped} NewsAPI source(s)`)
+  }
 
   for (const source of allSources) {
     let items: RawItem[] = []
@@ -255,6 +263,7 @@ async function runIngest() {
       total_fetched,
       new_inserted,
       duplicates_skipped,
+      newsapi_sources_skipped,
       errors_count: errors.length,
       errors,
     },
