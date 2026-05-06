@@ -3,11 +3,16 @@ export type SourceTier = '1_primary' | '2_wire' | '3_trade' | '4_secondary'
 export interface SourceConfig {
   id: string
   name: string
-  type: 'rss' | 'newsapi'
+  type: 'rss' | 'html' | 'newsapi'
   url?: string
   query?: string
   entity_name_for_lookup?: string
   source_tier: SourceTier
+  entity_context?: {
+    ticker: string | null
+    primary_project: string | null
+    materiality_triggers: string | null
+  }
 }
 
 // Static non-entity sources only.
